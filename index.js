@@ -1,9 +1,11 @@
 const puppeteer = require('puppeteer');
-const {initializeConnectionPool, insertPost, closingConnectionPool} = require("./databaseManangement");
-
-function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
-}
+const {
+    initializeConnectionPool,
+    insertPost,
+    closingConnectionPool
+} = require("./databaseManangement");
+const { downloadFile } = require("./downloadImage");
+const {delay} = require("./util");
 
 const objArgStr = process.argv[2];
 
@@ -20,6 +22,7 @@ console.log('Object argument: ', objArg);
     const browser = await puppeteer.launch({headless: false});
     const mainPage = await browser.newPage();
     const detailPostPage = await browser.newPage();
+    const imagePage = await browser.newPage();
     let index = 1;
     const maxIndex = 60;
     initializeConnectionPool(objArgStr);
@@ -45,6 +48,7 @@ console.log('Object argument: ', objArg);
                     const category = await post.$eval('div>span.category', el => el.innerText);
                     const time = await post.$eval('div>span.time', el => el.innerText);
                     const newsId = link.match(/news_id=(\d+)/)[1];
+                    await downloadFile(imagePage, image, `${newsId}.jpg`);
                     console.log('newsId: "%s", title: "%s", detailLink: "%s", image: "%s", category: "%s", time: "%s".', newsId, title, link, image, category, time);
 
                     let currentPage = 1;
@@ -61,6 +65,7 @@ console.log('Object argument: ', objArg);
                             arrayOfImages.push(detailImage);
                             link = await detailPostPage.$eval('div.right>span>a', el => el.href);
                             maxPage = parseInt(await detailPostPage.$eval('span.count-pageindex', el => el.innerText), 10);
+                            await downloadFile(imagePage, detailImage, `${newsId}-${currentPage}.jpg`);
 
                             console.log('currentPage: "%s", maxPage: "%s", text: "%s", nextPageLink: "%s", detailImage: "%s".', currentPage, maxPage, text, link, detailImage);
                             await delay(3000); //delay 3 seconds to avoid spamming the server

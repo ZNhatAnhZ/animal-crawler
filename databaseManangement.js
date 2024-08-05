@@ -33,4 +33,8 @@ async function insertPost(post){
     });
 }
 
-module.exports = {initializeConnectionPool, insertPost, closingConnectionPool};
+module.exports = {
+    initializeConnectionPool,
+    insertPost,
+    closingConnectionPool
+};
