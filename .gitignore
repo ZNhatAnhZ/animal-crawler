@@ -132,3 +132,5 @@ dist
 # include only the public directory
 public/*
 !public/pushingToGit.sh
+
+.idea

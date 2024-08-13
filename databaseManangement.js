@@ -6,6 +6,7 @@ function initializeConnectionPool(config){
     pool = mysql.createPool({
         connectionLimit : config.connectionLimit != null ? config.connectionLimit : 10,
         host     : config.host != null ? config.host : 'localhost',
+        port     : config.port != null ? config.port : 3306,
         user     : config.user != null ? config.user : 'root',
         password : config.password != null ? config.password : 'root',
         database : config.database != null ? config.database : 'animal_news',
